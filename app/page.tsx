@@ -74,7 +74,7 @@ export default function HomePage() {
         <section className="bg-gradient-to-b from-primary/10 to-background py-16 md:py-24">
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-4 text-balance">
-              Fresh, Hot Pizza <span className="text-primary">Delivered Fast</span>
+              Fresh, Hot Pizza <span className="text-primary">Delivered Fast na fast</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-8 text-pretty max-w-2xl mx-auto">
               Handcrafted pizzas made with premium ingredients. Customize your perfect pizza and get it delivered in 30
