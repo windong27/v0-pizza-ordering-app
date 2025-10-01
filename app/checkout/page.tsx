@@ -11,7 +11,6 @@ import { useCartStore } from "@/lib/store/cart-store"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
-import type { OrderDetails } from "@/types"
 import { calculateOrderTotal } from "@/lib/utils/price-calculator"
 
 export default function CheckoutPage() {
@@ -27,46 +26,69 @@ export default function CheckoutPage() {
   const handleCheckout = async (data: any) => {
     setIsLoading(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      // Prepare order data
+      const orderData = {
+        orderType: data.deliveryType,
+        customerName: data.name,
+        customerEmail: data.email,
+        customerPhone: data.phone,
+        deliveryAddress: data.deliveryType === "delivery" ? `${data.address}, ${data.city}, ${data.zipCode}` : null,
+        deliveryInstructions: data.instructions || null,
+        subtotal,
+        discount: 0,
+        paymentMethod: data.paymentMethod,
+        deliveryTime: data.deliveryTime === "asap" ? null : data.scheduledTime,
+        items: items.map((item) => ({
+          pizzaId: item.pizza.id,
+          name: item.pizza.name,
+          size: item.size,
+          crust: item.crust,
+          sauce: item.sauce,
+          cheese: item.cheese,
+          toppings: item.toppings,
+          quantity: item.quantity,
+          price: item.price,
+          specialInstructions: item.specialInstructions || null,
+        })),
+      }
 
-    // Generate order number
-    const orderNumber = `ORD-${Date.now().toString().slice(-8)}`
+      console.log("[v0] Submitting order:", orderData)
 
-    // Create order details
-    const orderDetails: OrderDetails = {
-      orderNumber,
-      items,
-      subtotal,
-      tax,
-      deliveryFee,
-      total,
-      deliveryType: data.deliveryType,
-      customerInfo: {
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        address: data.deliveryType === "delivery" ? `${data.address}, ${data.city}, ${data.zipCode}` : undefined,
-      },
-      estimatedTime: data.deliveryTime === "asap" ? "30-45 minutes" : "Scheduled",
-      status: "preparing",
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        // Clear cart
+        clearCart()
+
+        toast({
+          title: "Order placed successfully!",
+          description: `Your order #${result.orderNumber} has been confirmed.`,
+        })
+
+        // Redirect to confirmation page
+        router.push(`/order-confirmation/${result.orderNumber}`)
+      } else {
+        throw new Error(result.error || "Failed to place order")
+      }
+    } catch (error) {
+      console.error("[v0] Checkout error:", error)
+      toast({
+        title: "Order failed",
+        description: error instanceof Error ? error.message : "Failed to place order. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
     }
-
-    // Store order details in sessionStorage
-    sessionStorage.setItem("lastOrder", JSON.stringify(orderDetails))
-
-    // Clear cart
-    clearCart()
-
-    toast({
-      title: "Order placed successfully!",
-      description: `Your order #${orderNumber} has been confirmed.`,
-    })
-
-    setIsLoading(false)
-
-    // Redirect to confirmation page
-    router.push(`/order-confirmation/${orderNumber}`)
   }
 
   // Redirect if cart is empty
