@@ -77,8 +77,7 @@ export default function HomePage() {
               Fresh, Hot Pizza <span className="text-primary">Delivered Fast</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-8 text-pretty max-w-2xl mx-auto">
-              Handcrafted pizzas made with premium ingredients. Customize your perfect pizza and get it delivered in 30
-              minutes or less.
+              PizzaNelli is a handcrafted neapolitan style pizza meticulously baked with fresh and premium ingredients
             </p>
             <Button size="lg" className="text-lg px-8">
               Order Now

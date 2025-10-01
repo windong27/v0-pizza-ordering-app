@@ -11,10 +11,10 @@ export function Footer() {
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
                 <Pizza className="h-6 w-6 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold">PizzaHub</span>
+              <span className="text-xl font-bold">PizzaNelli</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              Crafting delicious pizzas with fresh ingredients since 2024.
+              PizzaNelli is a handcrafted neapolitan style pizza meticulously baked with fresh and premium ingredients
             </p>
           </div>
 
@@ -54,7 +54,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <MapPin className="h-4 w-4" />
-                <span>123 Pizza Street</span>
+                <span>178 Sandoval Avenue, Pasig, Philippines</span>
               </li>
             </ul>
           </div>
@@ -71,7 +71,7 @@ export function Footer() {
         </div>
 
         <div className="mt-8 border-t pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; 2025 PizzaHub. All rights reserved.</p>
+          <p>&copy; 2025 PizzaNelli. All rights reserved.</p>
         </div>
       </div>
     </footer>
