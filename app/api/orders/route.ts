@@ -66,6 +66,9 @@ export async function POST(request: Request) {
 
     // Create order items
     for (const item of body.items) {
+      const unitPrice = item.price || 0
+      const totalPrice = unitPrice * item.quantity
+
       const { data: orderItem, error: itemError } = await supabase
         .from("order_items")
         .insert({
@@ -77,15 +80,15 @@ export async function POST(request: Request) {
           sauce: item.sauce,
           cheese: item.cheese,
           quantity: item.quantity,
-          unit_price: item.price,
-          total_price: item.price * item.quantity,
+          unit_price: unitPrice,
+          total_price: totalPrice,
           special_instructions: item.specialInstructions || null,
         })
         .select()
         .single()
 
       if (itemError) {
-        console.error("[v0] Order item creation error:", itemError)
+        console.error("[v0] Order item creation error:", itemError.message)
         throw itemError
       }
 
@@ -118,25 +121,29 @@ export async function GET(request: Request) {
     const supabase = await createClient()
     const { searchParams } = new URL(request.url)
     const orderId = searchParams.get("orderId")
+    const orderNumber = searchParams.get("orderNumber")
 
-    if (!orderId) {
-      return NextResponse.json({ error: "Order ID is required" }, { status: 400 })
+    if (!orderId && !orderNumber) {
+      return NextResponse.json({ error: "Order ID or Order Number is required" }, { status: 400 })
     }
 
-    // Get order with items
-    const { data: order, error: orderError } = await supabase
-      .from("orders")
-      .select(
-        `
+    let query = supabase.from("orders").select(
+      `
         *,
         order_items (
           *,
           order_item_toppings (*)
         )
       `,
-      )
-      .eq("id", orderId)
-      .single()
+    )
+
+    if (orderNumber) {
+      query = query.eq("order_number", orderNumber)
+    } else {
+      query = query.eq("id", orderId)
+    }
+
+    const { data: order, error: orderError } = await query.single()
 
     if (orderError) {
       console.error("[v0] Order fetch error:", orderError)

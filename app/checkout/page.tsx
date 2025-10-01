@@ -48,7 +48,7 @@ export default function CheckoutPage() {
           cheese: item.cheese,
           toppings: item.toppings,
           quantity: item.quantity,
-          price: item.price,
+          price: item.totalPrice / item.quantity,
           specialInstructions: item.specialInstructions || null,
         })),
       }
