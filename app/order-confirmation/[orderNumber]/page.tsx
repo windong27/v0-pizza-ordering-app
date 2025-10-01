@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, Loader2, Package, Clock } from "lucide-react"
 import Link from "next/link"
-import { use } from "react"
 
 interface OrderConfirmationPageProps {
   params: Promise<{
@@ -16,12 +15,15 @@ interface OrderConfirmationPageProps {
 }
 
 export default function OrderConfirmationPage({ params }: OrderConfirmationPageProps) {
-  const resolvedParams = use(params)
+  const [orderNumber, setOrderNumber] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [order, setOrder] = useState<any>(null)
 
   useEffect(() => {
-    const fetchOrder = async () => {
+    const initPage = async () => {
+      const resolvedParams = await params
+      setOrderNumber(resolvedParams.orderNumber)
+
       try {
         // In a real app, you would fetch the order details from the API
         // For now, we'll just show a success message
@@ -33,10 +35,10 @@ export default function OrderConfirmationPage({ params }: OrderConfirmationPageP
       }
     }
 
-    fetchOrder()
-  }, [resolvedParams.orderNumber])
+    initPage()
+  }, [params])
 
-  if (isLoading) {
+  if (isLoading || !orderNumber) {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
@@ -67,7 +69,7 @@ export default function OrderConfirmationPage({ params }: OrderConfirmationPageP
             <CardContent className="space-y-6">
               <div className="bg-muted p-4 rounded-lg text-center">
                 <p className="text-sm text-muted-foreground mb-1">Order Number</p>
-                <p className="text-2xl font-bold">{resolvedParams.orderNumber}</p>
+                <p className="text-2xl font-bold">{orderNumber}</p>
               </div>
 
               <div className="space-y-3">
